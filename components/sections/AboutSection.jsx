@@ -1,0 +1,38 @@
+"use client";
+
+import { Award, GraduationCap, HeartHandshake } from "lucide-react";
+import { clinic } from "@/lib/clinic";
+import { useLanguage } from "@/components/LanguageProvider";
+import { Reveal } from "@/components/Reveal";
+
+export function AboutSection({ standalone = false }) {
+  const { t } = useLanguage();
+  return (
+    <section className={`about-section ${standalone ? "standalone" : ""}`} id="about">
+      <Reveal className="doctor-portrait">
+        <div className="portrait-placeholder">
+          <span>Doctor photo</span>
+        </div>
+        <div className="doctor-badge">
+          <Award size={18} />
+          Specialist placeholder
+        </div>
+      </Reveal>
+      <Reveal className="about-copy" delay={100}>
+        <p className="eyebrow">{t.aboutEyebrow}</p>
+        <h2>{t.aboutTitle}</h2>
+        <p>{t.aboutBody}</p>
+        <div className="credential-grid">
+          <span>
+            <GraduationCap size={21} />
+            {clinic.degrees}
+          </span>
+          <span>
+            <HeartHandshake size={21} />
+            Calm, judgment-free communication
+          </span>
+        </div>
+      </Reveal>
+    </section>
+  );
+}

@@ -1,0 +1,25 @@
+{
+  "name": "dental-clinic-website",
+  "version": "0.1.0",
+  "private": true,
+  "scripts": {
+    "dev": "next dev",
+    "build": "next build",
+    "start": "next start",
+    "lint": "next lint"
+  },
+  "dependencies": {
+    "@react-three/drei": "^9.122.0",
+    "@react-three/fiber": "^8.17.10",
+    "lucide-react": "^0.468.0",
+    "next": "^14.2.23",
+    "react": "^18.3.1",
+    "react-dom": "^18.3.1",
+    "three": "^0.171.0"
+  },
+  "devDependencies": {
+    "@gltf-transform/cli": "^4.3.0",
+    "eslint": "^8.57.1",
+    "eslint-config-next": "^14.2.23"
+  }
+}
