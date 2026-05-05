@@ -294,6 +294,12 @@ function focusForCategory(category) {
 }
 
 function getToothSubtype(toothEntry, sortedToothEntries) {
+  const meshName = toothEntry.mesh.name.toLowerCase();
+  if (meshName.includes("incisor")) return "incisor";
+  if (meshName.includes("canine")) return "canine";
+  if (meshName.includes("premolar")) return "premolar";
+  if (meshName.includes("molar")) return "molar";
+
   const rank = sortedToothEntries.indexOf(toothEntry);
   const toothCount = sortedToothEntries.length || 1;
   const jawSetCount = Math.max(1, Math.round(toothCount / 14));
@@ -338,7 +344,7 @@ function materialMeta(category, subtype = "default") {
 
   const categoryMeta = {
     jaw: {
-      base: "#e5a0a8",
+      base: "#d6b06f",
       active: "#e54464",
       opacity: 0.96,
       roughness: 0.24,
@@ -347,13 +353,13 @@ function materialMeta(category, subtype = "default") {
       emissive: "#ff5f79"
     },
     maxilla: {
-      base: "#d4a63a",
-      active: "#ffc933",
+      base: "#e5c486",
+      active: "#2e9ac8",
       opacity: 0.97,
       roughness: 0.22,
       clearcoat: 0.52,
       envMapIntensity: 1.22,
-      emissive: "#ffd45a"
+      emissive: "#44c3e7"
     },
     tmj: {
       base: "#55d5ce",
