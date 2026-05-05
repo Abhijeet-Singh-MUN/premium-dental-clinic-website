@@ -7,19 +7,12 @@ import {
   PerformanceMonitor,
   useGLTF
 } from "@react-three/drei";
-import { Component, Suspense, useMemo, useRef, useState } from "react";
+import { Component, Suspense, useEffect, useMemo, useRef, useState } from "react";
 import * as THREE from "three";
 
 const SOURCE_MODEL_URL = "/models/exploded-skull-hero.glb";
-const MAX_DRAG_Y = Math.PI / 2;
-const MAX_DRAG_X = Math.PI / 3;
-
-const ANATOMY_HOTSPOTS = [
-  { id: "teeth", label: "Teeth" },
-  { id: "maxilla", label: "Maxilla" },
-  { id: "mandible", label: "Mandible" },
-  { id: "tmj", label: "Temporomandibular Joint (TMJ)" }
-];
+const MAX_DRAG_Y = THREE.MathUtils.degToRad(78);
+const MAX_DRAG_X = THREE.MathUtils.degToRad(34);
 
 const enamel = {
   color: "#f8f0e6",
@@ -216,7 +209,7 @@ function ProceduralDentalModel() {
 
   return (
     <Float speed={1.15} rotationIntensity={0.15} floatIntensity={0.24}>
-      <group ref={group} rotation={[-0.14, 0, 0]} scale={1.06}>
+      <group ref={group} rotation={[-0.14, 0, 0]} scale={0.7}>
         <GumArch upper />
         <GumArch />
         <AlignerShell upper />
@@ -313,6 +306,46 @@ function getToothSubtype(toothEntry, sortedToothEntries) {
   return "molar";
 }
 
+let enamelTexture = null;
+
+function getEnamelTexture() {
+  if (enamelTexture) return enamelTexture;
+
+  const size = 64;
+  const data = new Uint8Array(size * size * 4);
+
+  for (let y = 0; y < size; y += 1) {
+    for (let x = 0; x < size; x += 1) {
+      const index = (y * size + x) * 4;
+      const nx = x / size;
+      const ny = y / size;
+      const grain = (((x * 17 + y * 31) % 23) / 23 - 0.5) * 4;
+      const softVein = Math.max(
+        0,
+        Math.sin((nx * 2.2 - ny * 1.35) * Math.PI * 2 + Math.sin(ny * 8) * 0.45)
+      );
+      const vein = Math.pow(softVein, 16) * 8;
+      const pearl = Math.sin((nx + ny) * Math.PI * 5) * 2;
+
+      data[index] = THREE.MathUtils.clamp(248 + grain + pearl - vein, 0, 255);
+      data[index + 1] = THREE.MathUtils.clamp(239 + grain * 0.8 + pearl - vein * 0.7, 0, 255);
+      data[index + 2] = THREE.MathUtils.clamp(224 + grain * 0.6 + pearl * 0.5 - vein * 0.4, 0, 255);
+      data[index + 3] = 255;
+    }
+  }
+
+  enamelTexture = new THREE.DataTexture(data, size, size, THREE.RGBAFormat);
+  enamelTexture.colorSpace = THREE.SRGBColorSpace;
+  enamelTexture.wrapS = THREE.RepeatWrapping;
+  enamelTexture.wrapT = THREE.RepeatWrapping;
+  enamelTexture.repeat.set(1.45, 1.45);
+  enamelTexture.minFilter = THREE.LinearMipmapLinearFilter;
+  enamelTexture.magFilter = THREE.LinearFilter;
+  enamelTexture.needsUpdate = true;
+
+  return enamelTexture;
+}
+
 function materialMeta(category, subtype = "default") {
   if (category === "tooth") {
     const subtypeColors = {
@@ -320,17 +353,17 @@ function materialMeta(category, subtype = "default") {
       canine: "#ff4f5e",
       premolar: "#34d46f",
       molar: "#8a5cff",
-      default: "#f9f1e8"
+      default: "#fff8ed"
     };
     return {
-      base: "#f9f1e8",
+      base: "#fff8ed",
       active: subtypeColors[subtype] || subtypeColors.default,
       opacity: 1,
-      roughness: 0.085,
-      clearcoat: 1,
-      envMapIntensity: 1.45,
-      emissive: "#ffffff",
-      emissiveIntensity: 0
+      roughness: 0.12,
+      clearcoat: 0.92,
+      envMapIntensity: 1.62,
+      emissive: "#fff3df",
+      emissiveIntensity: 0.015
     };
   }
 
@@ -407,16 +440,21 @@ function makeAnatomyMaterial(category, subtype) {
   const material =
     category === "tooth"
       ? new THREE.MeshPhysicalMaterial({
-          color: "#f9f1e8",
-          roughness: 0.085,
+          color: "#fff8ed",
+          map: getEnamelTexture(),
+          roughness: 0.12,
           metalness: 0,
-          transmission: 0.16,
+          transmission: 0.1,
           ior: 1.45,
-          thickness: 0.5,
-          clearcoat: 1,
-          clearcoatRoughness: 0.075,
-          envMapIntensity: 1.45,
-          specularIntensity: 1
+          thickness: 0.42,
+          clearcoat: 0.92,
+          clearcoatRoughness: 0.13,
+          envMapIntensity: 1.62,
+          specularColor: "#fff7e8",
+          specularIntensity: 1.12,
+          sheen: 0.18,
+          sheenColor: "#f8ead8",
+          sheenRoughness: 0.42
         })
       : new THREE.MeshPhysicalMaterial({
           color: meta.base,
@@ -577,7 +615,7 @@ function usePreparedModel(scene) {
     box.getCenter(center);
 
     const largestAxis = Math.max(size.x, size.y, size.z) || 1;
-    const scale = 3.2 / largestAxis;
+    const scale = 2.25 / largestAxis;
     model.scale.setScalar(scale);
     model.position.set(
       -center.x * scale,
@@ -595,9 +633,10 @@ function usePreparedModel(scene) {
   }, [scene]);
 }
 
-function RealDentalModel({ activeFocus, onFocusChange, onSelectFocus }) {
+function RealDentalModel({ activeFocus, onFocusChange }) {
   const group = useRef(null);
   const manualRotation = useRef({ x: 0, y: 0 });
+  const scrollProgress = useRef(0);
   const dragState = useRef({
     active: false,
     startX: 0,
@@ -610,19 +649,49 @@ function RealDentalModel({ activeFocus, onFocusChange, onSelectFocus }) {
   const { scene } = useGLTF(SOURCE_MODEL_URL);
   const { model, meshEntries } = usePreparedModel(scene);
 
+  useEffect(() => {
+    let frame = 0;
+
+    const updateScrollProgress = () => {
+      frame = 0;
+      const viewportHeight = window.innerHeight || 1;
+      scrollProgress.current = THREE.MathUtils.clamp(window.scrollY / viewportHeight, 0, 1);
+    };
+
+    const scheduleUpdate = () => {
+      if (frame) return;
+      frame = window.requestAnimationFrame(updateScrollProgress);
+    };
+
+    updateScrollProgress();
+    window.addEventListener("scroll", scheduleUpdate, { passive: true });
+    window.addEventListener("resize", scheduleUpdate);
+
+    return () => {
+      window.removeEventListener("scroll", scheduleUpdate);
+      window.removeEventListener("resize", scheduleUpdate);
+      if (frame) {
+        window.cancelAnimationFrame(frame);
+      }
+    };
+  }, []);
+
   useFrame((state) => {
     if (!group.current) return;
     animateModelMaterials(meshEntries, activeFocus, isInteracting);
 
+    const scroll = scrollProgress.current;
     const pointerInfluence = isInteracting && !dragState.current.active ? 0.55 : 0.22;
     const targetY =
       manualRotation.current.y +
       Math.sin(state.clock.elapsedTime * 0.18) * 0.08 +
-      state.pointer.x * 0.32 * pointerInfluence;
+      state.pointer.x * 0.32 * pointerInfluence -
+      scroll * 0.1;
     const targetX =
       manualRotation.current.x +
       Math.sin(state.clock.elapsedTime * 0.15) * 0.025 -
-      state.pointer.y * 0.18 * pointerInfluence;
+      state.pointer.y * 0.16 * pointerInfluence -
+      scroll * 0.055;
     group.current.rotation.y = THREE.MathUtils.lerp(
       group.current.rotation.y,
       THREE.MathUtils.clamp(targetY, -MAX_DRAG_Y, MAX_DRAG_Y),
@@ -633,7 +702,17 @@ function RealDentalModel({ activeFocus, onFocusChange, onSelectFocus }) {
       THREE.MathUtils.clamp(targetX, -MAX_DRAG_X, MAX_DRAG_X),
       0.08
     );
-    targetScale.current = isInteracting || activeFocus ? 1.035 : 1;
+    group.current.position.y = THREE.MathUtils.lerp(
+      group.current.position.y,
+      0.08 + scroll * 0.15,
+      0.055
+    );
+    group.current.position.z = THREE.MathUtils.lerp(
+      group.current.position.z,
+      -scroll * 0.22,
+      0.055
+    );
+    targetScale.current = (isInteracting || activeFocus ? 1.02 : 0.98) - scroll * 0.02;
     const nextScale = THREE.MathUtils.lerp(group.current.scale.x, targetScale.current, 0.08);
     group.current.scale.setScalar(nextScale);
   });
@@ -650,7 +729,7 @@ function RealDentalModel({ activeFocus, onFocusChange, onSelectFocus }) {
     event.target.setPointerCapture?.(event.pointerId);
     const focus = event.object?.userData?.focus;
     if (focus && focus !== "skull") {
-      onSelectFocus(focus);
+      onFocusChange(focus);
     }
     dragState.current = {
       active: true,
@@ -737,57 +816,21 @@ class ModelErrorBoundary extends Component {
   }
 }
 
-function ModelWithFallback({ activeFocus, onFocusChange, onSelectFocus }) {
+function ModelWithFallback({ activeFocus, onFocusChange }) {
   return (
     <ModelErrorBoundary fallback={<ProceduralDentalModel />}>
       <RealDentalModel
         activeFocus={activeFocus}
         onFocusChange={onFocusChange}
-        onSelectFocus={onSelectFocus}
       />
     </ModelErrorBoundary>
-  );
-}
-
-function AnatomyHotspots({
-  activeFocus,
-  selectedFocus,
-  onFocusChange,
-  onSelectFocus
-}) {
-  return (
-    <div className="model-hotspots" aria-label="Dental anatomy highlights">
-      {ANATOMY_HOTSPOTS.map((hotspot) => {
-        const isActive = activeFocus === hotspot.id || selectedFocus === hotspot.id;
-        return (
-          <button
-            key={hotspot.id}
-            type="button"
-            className={isActive ? "active" : ""}
-            aria-pressed={selectedFocus === hotspot.id}
-            onMouseEnter={() => onFocusChange(hotspot.id)}
-            onMouseLeave={() => onFocusChange(null)}
-            onFocus={() => onFocusChange(hotspot.id)}
-            onBlur={() => onFocusChange(null)}
-            onClick={() => onSelectFocus(hotspot.id)}
-          >
-            {hotspot.label}
-          </button>
-        );
-      })}
-    </div>
   );
 }
 
 export function HeroVisual() {
   const [dpr, setDpr] = useState(1.4);
   const [hoverFocus, setHoverFocus] = useState(null);
-  const [selectedFocus, setSelectedFocus] = useState(null);
-  const activeFocus = selectedFocus || hoverFocus;
-
-  const handleSelectFocus = (focus) => {
-    setSelectedFocus((current) => (current === focus ? null : focus));
-  };
+  const activeFocus = hoverFocus;
 
   return (
     <div className="hero-visual" aria-label="3D dental technology illustration">
@@ -799,8 +842,11 @@ export function HeroVisual() {
       <Canvas
         shadows
         dpr={dpr}
-        camera={{ position: [0, 0.32, 4.75], fov: 38 }}
-        gl={{ antialias: true, powerPreference: "high-performance" }}
+        camera={{ position: [0, 0.3, 5.2], fov: 38 }}
+        gl={{ alpha: true, antialias: true, powerPreference: "high-performance" }}
+        onCreated={({ gl }) => {
+          gl.setClearColor(0x000000, 0);
+        }}
       >
         <PerformanceMonitor
           onIncline={() => setDpr(1.6)}
@@ -815,17 +861,10 @@ export function HeroVisual() {
           <ModelWithFallback
             activeFocus={activeFocus}
             onFocusChange={setHoverFocus}
-            onSelectFocus={handleSelectFocus}
           />
           <Environment preset="studio" />
         </Suspense>
       </Canvas>
-      <AnatomyHotspots
-        activeFocus={activeFocus}
-        selectedFocus={selectedFocus}
-        onFocusChange={setHoverFocus}
-        onSelectFocus={handleSelectFocus}
-      />
     </div>
   );
 }

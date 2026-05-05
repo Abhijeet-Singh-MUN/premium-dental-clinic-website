@@ -27,6 +27,9 @@ export function HeroSection() {
 
   return (
     <section className="hero-section" id="home">
+      <div className="hero-scene-layer">
+        <HeroVisual />
+      </div>
       <div className="hero-content">
         <p className="eyebrow">{t.heroEyebrow}</p>
         <h1>{t.heroTitle}</h1>
@@ -58,7 +61,6 @@ export function HeroSection() {
         </div>
       </div>
       <div className="hero-stage">
-        <HeroVisual />
         <div className="stage-notes">
           <span>Precise diagnosis</span>
           <span>Advanced technology</span>
