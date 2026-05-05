@@ -296,11 +296,14 @@ function focusForCategory(category) {
 function getToothSubtype(toothEntry, sortedToothEntries) {
   const rank = sortedToothEntries.indexOf(toothEntry);
   const toothCount = sortedToothEntries.length || 1;
-  const normalizedRank = rank / Math.max(toothCount - 1, 1);
+  const jawSetCount = Math.max(1, Math.round(toothCount / 14));
+  const incisorLimit = 4 * jawSetCount;
+  const canineLimit = incisorLimit + 2 * jawSetCount;
+  const premolarLimit = canineLimit + 4 * jawSetCount;
 
-  if (normalizedRank < 0.28) return "incisor";
-  if (normalizedRank < 0.43) return "canine";
-  if (normalizedRank < 0.72) return "premolar";
+  if (rank < incisorLimit) return "incisor";
+  if (rank < canineLimit) return "canine";
+  if (rank < premolarLimit) return "premolar";
   return "molar";
 }
 
@@ -335,31 +338,31 @@ function materialMeta(category, subtype = "default") {
 
   const categoryMeta = {
     jaw: {
-      base: "#d6b06f",
-      active: "#2c8fb7",
+      base: "#e5a0a8",
+      active: "#e54464",
       opacity: 0.96,
       roughness: 0.24,
       clearcoat: 0.48,
       envMapIntensity: 1.18,
-      emissive: "#39b9dc"
+      emissive: "#ff5f79"
     },
     maxilla: {
-      base: "#e5c486",
-      active: "#e86f93",
+      base: "#d4a63a",
+      active: "#ffc933",
       opacity: 0.97,
       roughness: 0.22,
       clearcoat: 0.52,
       envMapIntensity: 1.22,
-      emissive: "#ff7fa2"
+      emissive: "#ffd45a"
     },
     tmj: {
       base: "#55d5ce",
-      active: "#006d77",
-      opacity: 0.72,
-      roughness: 0.16,
-      clearcoat: 0.72,
-      envMapIntensity: 1.32,
-      emissive: "#00f5e0"
+      active: "#b000ff",
+      opacity: 0.78,
+      roughness: 0.14,
+      clearcoat: 0.82,
+      envMapIntensity: 1.48,
+      emissive: "#ff4fd8"
     },
     cranium: {
       base: "#d7a6bf",
@@ -455,18 +458,23 @@ function animateModelMaterials(meshEntries, activeFocus, isInteracting) {
 
     const targetColor = isActive ? meta.activeColor : meta.baseColor;
     const targetEmissiveColor = isActive ? meta.activeEmissiveColor : meta.baseEmissiveColor;
-    const targetOpacity = isActive ? Math.min(meta.baseOpacity + 0.1, 1) : meta.baseOpacity;
+    const targetOpacity =
+      focusIsActive && focus === "tmj"
+        ? 0.98
+        : isActive
+          ? Math.min(meta.baseOpacity + 0.1, 1)
+          : meta.baseOpacity;
     const targetClearcoat = isActive ? Math.min(meta.baseClearcoat + 0.18, 1) : meta.baseClearcoat;
     const targetEmissive = focusIsActive
       ? focus === "tmj"
-        ? 0.82
+        ? 1.15
         : 0.46
       : mouthIsActive
         ? 0.18
         : meta.baseEmissiveIntensity;
 
-    material.color.lerp(targetColor, 0.22);
-    material.emissive.lerp(targetEmissiveColor, 0.22);
+    material.color.lerp(targetColor, focus === "tmj" ? 0.32 : 0.22);
+    material.emissive.lerp(targetEmissiveColor, focus === "tmj" ? 0.32 : 0.22);
     material.opacity = THREE.MathUtils.lerp(material.opacity, targetOpacity, 0.18);
     material.clearcoat = THREE.MathUtils.lerp(material.clearcoat || 0, targetClearcoat, 0.18);
     material.emissiveIntensity = THREE.MathUtils.lerp(

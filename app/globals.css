@@ -428,16 +428,18 @@ h3 {
 
 .stage-notes {
   position: absolute;
-  top: 20%;
-  right: 0;
-  z-index: 4;
+  right: 0.8rem;
+  bottom: 5.5rem;
+  z-index: 1;
   display: grid;
   gap: 0.7rem;
+  opacity: 0.86;
+  pointer-events: none;
 }
 
 .stage-notes span {
   padding: 0.72rem 0.9rem;
-  background: rgba(255, 255, 255, 0.72);
+  background: rgba(255, 255, 255, 0.54);
   border: 1px solid var(--line);
   border-radius: var(--radius);
   color: var(--primary-dark);
