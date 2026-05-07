@@ -1,6 +1,7 @@
 "use client";
 
 import Link from "next/link";
+import Image from "next/image";
 import { CalendarDays, Languages, Menu, Phone, X } from "lucide-react";
 import { useState } from "react";
 import { clinic, navItems, whatsappUrl } from "@/lib/clinic";
@@ -13,12 +14,20 @@ export function Header({ active }) {
   return (
     <header className="site-header">
       <a className="emergency-strip" href={clinic.phoneHref}>
-        Dental emergency or severe pain? Call now: {clinic.phone}
+        {lang === "hi"
+          ? `डेंटल इमरजेंसी या तेज दर्द? अभी कॉल करें: ${clinic.phone}`
+          : `Dental emergency or severe pain? Call now: ${clinic.phone}`}
       </a>
       <nav className="nav-shell" aria-label="Main navigation">
         <Link href="/" className="brand" onClick={() => setOpen(false)}>
           <span className="brand-mark" aria-hidden="true">
-            <span />
+            <Image
+              src="/images/global-smile-logo.png"
+              alt=""
+              width={54}
+              height={54}
+              priority
+            />
           </span>
           <span>
             <strong>{clinic.name}</strong>

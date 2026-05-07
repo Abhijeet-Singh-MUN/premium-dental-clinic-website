@@ -11,6 +11,7 @@ import { Component, Suspense, useEffect, useMemo, useRef, useState } from "react
 import * as THREE from "three";
 
 const SOURCE_MODEL_URL = "/models/exploded-skull-hero.glb";
+const MODEL_VISUAL_PROFILE = 2;
 const MAX_DRAG_Y = THREE.MathUtils.degToRad(78);
 const MAX_DRAG_X = THREE.MathUtils.degToRad(34);
 
@@ -286,6 +287,11 @@ function focusForCategory(category) {
   return "skull";
 }
 
+function isLowerToothEntry(entry) {
+  const meshName = entry.mesh.name.toLowerCase();
+  return entry.category === "tooth" && meshName.startsWith("lower_");
+}
+
 function getToothSubtype(toothEntry, sortedToothEntries) {
   const meshName = toothEntry.mesh.name.toLowerCase();
   if (meshName.includes("incisor")) return "incisor";
@@ -355,15 +361,17 @@ function materialMeta(category, subtype = "default") {
       molar: "#8a5cff",
       default: "#fff8ed"
     };
+    const activeToothColor = subtypeColors[subtype] || subtypeColors.default;
+
     return {
-      base: "#fff8ed",
-      active: subtypeColors[subtype] || subtypeColors.default,
+      base: MODEL_VISUAL_PROFILE === 2 ? activeToothColor : "#fff8ed",
+      active: activeToothColor,
       opacity: 1,
-      roughness: 0.12,
-      clearcoat: 0.92,
-      envMapIntensity: 1.62,
-      emissive: "#fff3df",
-      emissiveIntensity: 0.015
+      roughness: MODEL_VISUAL_PROFILE === 2 ? 0.16 : 0.12,
+      clearcoat: MODEL_VISUAL_PROFILE === 2 ? 0.82 : 0.92,
+      envMapIntensity: MODEL_VISUAL_PROFILE === 2 ? 1.42 : 1.62,
+      emissive: MODEL_VISUAL_PROFILE === 2 ? activeToothColor : "#fff3df",
+      emissiveIntensity: MODEL_VISUAL_PROFILE === 2 ? 0.08 : 0.015
     };
   }
 
@@ -377,58 +385,61 @@ function materialMeta(category, subtype = "default") {
 
   const categoryMeta = {
     jaw: {
-      base: "#d6b06f",
+      base: MODEL_VISUAL_PROFILE === 2 ? "#e54464" : "#d6b06f",
       active: "#e54464",
-      opacity: 0.96,
+      opacity: MODEL_VISUAL_PROFILE === 2 ? 0.9 : 0.96,
       roughness: 0.24,
       clearcoat: 0.48,
       envMapIntensity: 1.18,
-      emissive: "#ff5f79"
+      emissive: "#ff5f79",
+      emissiveIntensity: MODEL_VISUAL_PROFILE === 2 ? 0.08 : 0
     },
     maxilla: {
-      base: "#e5c486",
+      base: MODEL_VISUAL_PROFILE === 2 ? "#2e9ac8" : "#e5c486",
       active: "#2e9ac8",
-      opacity: 0.97,
+      opacity: MODEL_VISUAL_PROFILE === 2 ? 0.9 : 0.97,
       roughness: 0.22,
       clearcoat: 0.52,
       envMapIntensity: 1.22,
-      emissive: "#44c3e7"
+      emissive: "#44c3e7",
+      emissiveIntensity: MODEL_VISUAL_PROFILE === 2 ? 0.08 : 0
     },
     tmj: {
-      base: "#55d5ce",
+      base: MODEL_VISUAL_PROFILE === 2 ? "#b000ff" : "#55d5ce",
       active: "#b000ff",
-      opacity: 0.78,
+      opacity: MODEL_VISUAL_PROFILE === 2 ? 0.88 : 0.78,
       roughness: 0.14,
       clearcoat: 0.82,
       envMapIntensity: 1.48,
-      emissive: "#ff4fd8"
+      emissive: "#ff4fd8",
+      emissiveIntensity: MODEL_VISUAL_PROFILE === 2 ? 0.16 : 0
     },
     cranium: {
-      base: "#d7a6bf",
+      base: MODEL_VISUAL_PROFILE === 2 ? "#eadfcd" : "#d7a6bf",
       active: "#f1bad0",
-      opacity: 0.54,
+      opacity: MODEL_VISUAL_PROFILE === 2 ? 0.28 : 0.54,
       roughness: 0.34,
-      clearcoat: 0.24,
-      envMapIntensity: 0.86,
-      emissive: "#e9a5c2"
+      clearcoat: MODEL_VISUAL_PROFILE === 2 ? 0.16 : 0.24,
+      envMapIntensity: MODEL_VISUAL_PROFILE === 2 ? 0.58 : 0.86,
+      emissive: MODEL_VISUAL_PROFILE === 2 ? "#fff4df" : "#e9a5c2"
     },
     center: {
-      base: "#a9b8ff",
+      base: MODEL_VISUAL_PROFILE === 2 ? "#eee2ce" : "#a9b8ff",
       active: "#c2cdff",
-      opacity: 0.58,
+      opacity: MODEL_VISUAL_PROFILE === 2 ? 0.24 : 0.58,
       roughness: 0.36,
-      clearcoat: 0.24,
-      envMapIntensity: 0.82,
-      emissive: "#9fb0ff"
+      clearcoat: MODEL_VISUAL_PROFILE === 2 ? 0.12 : 0.24,
+      envMapIntensity: MODEL_VISUAL_PROFILE === 2 ? 0.54 : 0.82,
+      emissive: MODEL_VISUAL_PROFILE === 2 ? "#fff4df" : "#9fb0ff"
     },
     support: {
-      base: "#79d6a9",
+      base: MODEL_VISUAL_PROFILE === 2 ? "#eadfcd" : "#79d6a9",
       active: "#a1efc7",
-      opacity: 0.6,
+      opacity: MODEL_VISUAL_PROFILE === 2 ? 0.26 : 0.6,
       roughness: 0.32,
-      clearcoat: 0.28,
-      envMapIntensity: 0.86,
-      emissive: "#78ddad"
+      clearcoat: MODEL_VISUAL_PROFILE === 2 ? 0.14 : 0.28,
+      envMapIntensity: MODEL_VISUAL_PROFILE === 2 ? 0.56 : 0.86,
+      emissive: MODEL_VISUAL_PROFILE === 2 ? "#fff4df" : "#78ddad"
     }
   }[category];
 
@@ -440,16 +451,16 @@ function makeAnatomyMaterial(category, subtype) {
   const material =
     category === "tooth"
       ? new THREE.MeshPhysicalMaterial({
-          color: "#fff8ed",
-          map: getEnamelTexture(),
-          roughness: 0.12,
+          color: meta.base,
+          map: MODEL_VISUAL_PROFILE === 2 ? null : getEnamelTexture(),
+          roughness: meta.roughness,
           metalness: 0,
-          transmission: 0.1,
+          transmission: MODEL_VISUAL_PROFILE === 2 ? 0.05 : 0.1,
           ior: 1.45,
           thickness: 0.42,
-          clearcoat: 0.92,
-          clearcoatRoughness: 0.13,
-          envMapIntensity: 1.62,
+          clearcoat: meta.clearcoat,
+          clearcoatRoughness: MODEL_VISUAL_PROFILE === 2 ? 0.18 : 0.13,
+          envMapIntensity: meta.envMapIntensity,
           specularColor: "#fff7e8",
           specularIntensity: 1.12,
           sheen: 0.18,
@@ -500,22 +511,38 @@ function animateModelMaterials(meshEntries, activeFocus, isInteracting) {
       isInteracting && (focus === "teeth" || focus === "mandible" || focus === "maxilla");
     const isActive = focusIsActive || mouthIsActive;
 
-    const targetColor = isActive ? meta.activeColor : meta.baseColor;
-    const targetEmissiveColor = isActive ? meta.activeEmissiveColor : meta.baseEmissiveColor;
+    const targetColor = MODEL_VISUAL_PROFILE === 2
+      ? meta.baseColor
+      : isActive
+        ? meta.activeColor
+        : meta.baseColor;
+    const targetEmissiveColor = MODEL_VISUAL_PROFILE === 2
+      ? meta.baseEmissiveColor
+      : isActive
+        ? meta.activeEmissiveColor
+        : meta.baseEmissiveColor;
     const targetOpacity =
-      focusIsActive && focus === "tmj"
+      MODEL_VISUAL_PROFILE === 2
+        ? meta.baseOpacity
+        : focusIsActive && focus === "tmj"
         ? 0.98
         : isActive
           ? Math.min(meta.baseOpacity + 0.1, 1)
           : meta.baseOpacity;
-    const targetClearcoat = isActive ? Math.min(meta.baseClearcoat + 0.18, 1) : meta.baseClearcoat;
-    const targetEmissive = focusIsActive
-      ? focus === "tmj"
-        ? 1.15
-        : 0.46
-      : mouthIsActive
-        ? 0.18
-        : meta.baseEmissiveIntensity;
+    const targetClearcoat =
+      MODEL_VISUAL_PROFILE === 2 || !isActive
+        ? meta.baseClearcoat
+        : Math.min(meta.baseClearcoat + 0.18, 1);
+    const targetEmissive =
+      MODEL_VISUAL_PROFILE === 2
+        ? meta.baseEmissiveIntensity
+        : focusIsActive
+          ? focus === "tmj"
+            ? 1.15
+            : 0.46
+          : mouthIsActive
+            ? 0.18
+            : meta.baseEmissiveIntensity;
 
     material.color.lerp(targetColor, focus === "tmj" ? 0.32 : 0.22);
     material.emissive.lerp(targetEmissiveColor, focus === "tmj" ? 0.32 : 0.22);
@@ -525,6 +552,32 @@ function animateModelMaterials(meshEntries, activeFocus, isInteracting) {
       material.emissiveIntensity || 0,
       targetEmissive,
       0.18
+    );
+  });
+}
+
+function animateSpeakingJaw(meshEntries, rotationWave) {
+  if (MODEL_VISUAL_PROFILE !== 2) return;
+
+  const openAmount = Math.pow((rotationWave + 1) / 2, 1.25);
+  const openAngle = THREE.MathUtils.degToRad(15) * openAmount;
+  const hingeAxis = new THREE.Vector3(1, 0, 0);
+
+  meshEntries.forEach((entry) => {
+    if (!entry.isLowerMouth) return;
+
+    const { mesh, basePosition, baseRotation, jawPivot } = entry;
+    const hingedPosition = basePosition
+      .clone()
+      .sub(jawPivot)
+      .applyAxisAngle(hingeAxis, openAngle)
+      .add(jawPivot);
+
+    mesh.position.copy(hingedPosition);
+    mesh.rotation.set(
+      baseRotation.x + openAngle,
+      baseRotation.y,
+      baseRotation.z
     );
   });
 }
@@ -562,7 +615,8 @@ function usePreparedModel(scene) {
         category,
         focus: focusForCategory(category),
         subtype: "default",
-        center: new THREE.Vector3()
+        center: new THREE.Vector3(),
+        isLowerMouth: false
       });
     });
 
@@ -576,7 +630,8 @@ function usePreparedModel(scene) {
           category: "maxilla",
           focus: "maxilla",
           subtype: "default",
-          center: new THREE.Vector3()
+          center: new THREE.Vector3(),
+          isLowerMouth: false
         };
         meshEntries.push(entry);
       });
@@ -591,10 +646,30 @@ function usePreparedModel(scene) {
     const toothEntries = meshEntries
       .filter((entry) => entry.category === "tooth")
       .sort((a, b) => Math.abs(a.center.x) - Math.abs(b.center.x));
+    const mandibleEntries = meshEntries.filter((entry) => entry.category === "jaw");
+    const mandibleBox = new THREE.Box3();
+    mandibleEntries.forEach((entry) => {
+      mandibleBox.expandByObject(entry.mesh);
+    });
+    const mandibleCenter = new THREE.Vector3();
+    const mandibleSize = new THREE.Vector3();
+    mandibleBox.getCenter(mandibleCenter);
+    mandibleBox.getSize(mandibleSize);
+    const jawPivot = new THREE.Vector3(
+      mandibleCenter.x,
+      mandibleCenter.y + mandibleSize.y * 0.34,
+      mandibleCenter.z - mandibleSize.z * 0.18
+    );
 
     meshEntries.forEach((entry) => {
       entry.subtype =
         entry.category === "tooth" ? getToothSubtype(entry, toothEntries) : "default";
+      entry.isLowerMouth =
+        entry.category === "jaw" ||
+        isLowerToothEntry(entry);
+      entry.basePosition = entry.mesh.position.clone();
+      entry.baseRotation = entry.mesh.rotation.clone();
+      entry.jawPivot = jawPivot.clone();
       entry.mesh.userData = {
         ...entry.mesh.userData,
         category: entry.category,
@@ -681,15 +756,22 @@ function RealDentalModel({ activeFocus, onFocusChange }) {
     animateModelMaterials(meshEntries, activeFocus, isInteracting);
 
     const scroll = scrollProgress.current;
+    const diagonalDrift =
+      MODEL_VISUAL_PROFILE === 2 ? Math.sin(state.clock.elapsedTime * 0.66) : 0;
+    const diagonalRotation =
+      MODEL_VISUAL_PROFILE === 2 ? Math.sin(state.clock.elapsedTime * 0.54 + 0.65) : 0;
+    animateSpeakingJaw(meshEntries, diagonalRotation);
     const pointerInfluence = isInteracting && !dragState.current.active ? 0.55 : 0.22;
     const targetY =
       manualRotation.current.y +
       Math.sin(state.clock.elapsedTime * 0.18) * 0.08 +
+      diagonalRotation * 0.2 +
       state.pointer.x * 0.32 * pointerInfluence -
       scroll * 0.1;
     const targetX =
       manualRotation.current.x +
       Math.sin(state.clock.elapsedTime * 0.15) * 0.025 -
+      diagonalRotation * 0.07 -
       state.pointer.y * 0.16 * pointerInfluence -
       scroll * 0.055;
     group.current.rotation.y = THREE.MathUtils.lerp(
@@ -702,10 +784,20 @@ function RealDentalModel({ activeFocus, onFocusChange }) {
       THREE.MathUtils.clamp(targetX, -MAX_DRAG_X, MAX_DRAG_X),
       0.08
     );
+    group.current.rotation.z = THREE.MathUtils.lerp(
+      group.current.rotation.z,
+      MODEL_VISUAL_PROFILE === 2 ? diagonalRotation * -0.035 : 0,
+      0.055
+    );
+    group.current.position.x = THREE.MathUtils.lerp(
+      group.current.position.x,
+      0.02 + diagonalDrift * 0.13,
+      0.045
+    );
     group.current.position.y = THREE.MathUtils.lerp(
       group.current.position.y,
-      0.08 + scroll * 0.15,
-      0.055
+      0.08 + diagonalDrift * 0.11 + scroll * 0.15,
+      0.045
     );
     group.current.position.z = THREE.MathUtils.lerp(
       group.current.position.z,

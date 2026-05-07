@@ -2,11 +2,11 @@
 
 import { useMemo, useState } from "react";
 import { CalendarCheck, MessageCircle, ShieldCheck } from "lucide-react";
-import { clinic, services, whatsappUrl } from "@/lib/clinic";
+import { services, whatsappUrl } from "@/lib/clinic";
 import { useLanguage } from "@/components/LanguageProvider";
 import { Reveal } from "@/components/Reveal";
 
-const times = ["10:00 AM", "11:30 AM", "1:00 PM", "4:30 PM", "6:00 PM"];
+const times = ["10:00 AM", "11:30 AM", "1:00 PM", "5:00 PM", "6:30 PM", "7:30 PM"];
 
 export function BookingSection({ standalone = false }) {
   const { lang, t } = useLanguage();
@@ -60,7 +60,7 @@ Concern: ${form.message || "Not provided"}`,
   return (
     <section className={`booking-section ${standalone ? "standalone" : ""}`} id="booking">
       <Reveal className="booking-copy">
-        <p className="eyebrow">Low-friction booking</p>
+        <p className="eyebrow">{lang === "hi" ? "आसान बुकिंग" : "Low-friction booking"}</p>
         <h2>{t.bookingTitle}</h2>
         <p>{t.bookingBody}</p>
         <div className="booking-assurance">
@@ -70,11 +70,11 @@ Concern: ${form.message || "Not provided"}`,
           </span>
           <span>
             <MessageCircle size={18} />
-            WhatsApp confirmation friendly
+            {lang === "hi" ? "WhatsApp से आसान कन्फर्मेशन" : "WhatsApp confirmation friendly"}
           </span>
           <span>
             <CalendarCheck size={18} />
-            Built for Muzaffarnagar patients
+            {lang === "hi" ? "मुजफ्फरनगर के मरीजों के लिए" : "Built for Muzaffarnagar patients"}
           </span>
         </div>
       </Reveal>
@@ -98,7 +98,7 @@ Concern: ${form.message || "Not provided"}`,
             <label>
               {t.time}
               <select name="time" value={form.time} onChange={update} required>
-                <option value="">Select</option>
+                <option value="">{lang === "hi" ? "चुनें" : "Select"}</option>
                 {times.map((time) => (
                   <option key={time} value={time}>
                     {time}
@@ -110,7 +110,13 @@ Concern: ${form.message || "Not provided"}`,
           <div className="form-row">
             <label>
               {t.name}
-              <input name="name" value={form.name} onChange={update} placeholder="Patient name" required />
+              <input
+                name="name"
+                value={form.name}
+                onChange={update}
+                placeholder={lang === "hi" ? "मरीज का नाम" : "Patient name"}
+                required
+              />
             </label>
             <label>
               {t.phone}
@@ -130,7 +136,11 @@ Concern: ${form.message || "Not provided"}`,
               name="message"
               value={form.message}
               onChange={update}
-              placeholder="Pain, implant query, wisdom tooth, emergency..."
+              placeholder={
+                lang === "hi"
+                  ? "दर्द, फिलिंग, सफाई, इम्प्लांट या इमरजेंसी..."
+                  : "Pain, filling, cleaning, implant, or emergency..."
+              }
               rows={4}
             />
           </label>
@@ -152,7 +162,7 @@ Concern: ${form.message || "Not provided"}`,
               <p>{t.success}</p>
               <a href={whatsappUrl(whatsappMessage)} target="_blank" rel="noreferrer">
                 <MessageCircle size={17} />
-                Send on WhatsApp
+                {lang === "hi" ? "WhatsApp पर भेजें" : "Send on WhatsApp"}
               </a>
             </div>
           )}

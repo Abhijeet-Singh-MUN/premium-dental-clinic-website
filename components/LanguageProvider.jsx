@@ -6,16 +6,16 @@ import { copy } from "@/lib/i18n";
 const LanguageContext = createContext(null);
 
 export function LanguageProvider({ children }) {
-  const [lang, setLang] = useState("en");
+  const [lang, setLang] = useState("hi");
 
   useEffect(() => {
-    const saved = window.localStorage.getItem("lumine-lang");
+    const saved = window.localStorage.getItem("lumine-lang-v2");
     if (saved === "hi" || saved === "en") setLang(saved);
   }, []);
 
   useEffect(() => {
     document.documentElement.lang = lang === "hi" ? "hi" : "en";
-    window.localStorage.setItem("lumine-lang", lang);
+    window.localStorage.setItem("lumine-lang-v2", lang);
   }, [lang]);
 
   const value = useMemo(

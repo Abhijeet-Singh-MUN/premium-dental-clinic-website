@@ -15,7 +15,7 @@ export function AboutSection({ standalone = false }) {
         </div>
         <div className="doctor-badge">
           <Award size={18} />
-          Specialist placeholder
+          Ex-Army Dental Surgeon
         </div>
       </Reveal>
       <Reveal className="about-copy" delay={100}>
@@ -29,7 +29,7 @@ export function AboutSection({ standalone = false }) {
           </span>
           <span>
             <HeartHandshake size={21} />
-            Calm, judgment-free communication
+            18 years of service, 26,000 patients treated
           </span>
         </div>
       </Reveal>

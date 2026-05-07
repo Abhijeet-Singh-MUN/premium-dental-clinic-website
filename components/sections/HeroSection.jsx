@@ -23,7 +23,7 @@ const HeroVisual = dynamic(
 );
 
 export function HeroSection() {
-  const { t } = useLanguage();
+  const { lang, t } = useLanguage();
 
   return (
     <section className="hero-section" id="home">
@@ -62,9 +62,9 @@ export function HeroSection() {
       </div>
       <div className="hero-stage">
         <div className="stage-notes">
-          <span>Precise diagnosis</span>
-          <span>Advanced technology</span>
-          <span>Compassionate care</span>
+          <span>{lang === "hi" ? "सटीक जांच" : "Precise diagnosis"}</span>
+          <span>{lang === "hi" ? "एडवांस तकनीक" : "Advanced technology"}</span>
+          <span>{lang === "hi" ? "सहानुभूतिपूर्ण देखभाल" : "Compassionate care"}</span>
         </div>
       </div>
       <div className="hero-local">

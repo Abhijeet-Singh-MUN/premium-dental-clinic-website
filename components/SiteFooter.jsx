@@ -1,14 +1,20 @@
+"use client";
+
 import Link from "next/link";
 import { clinic, navItems, whatsappUrl } from "@/lib/clinic";
+import { useLanguage } from "@/components/LanguageProvider";
 
 export function SiteFooter() {
+  const { lang } = useLanguage();
+
   return (
     <footer className="site-footer">
       <div>
         <strong>{clinic.name}</strong>
         <p>
-          Placeholder premium dental clinic website for Muzaffarnagar. Replace
-          all details before publishing.
+          {lang === "hi"
+            ? "मुजफ्फरनगर में भरोसेमंद डेंटल केयर, आसान अपॉइंटमेंट और WhatsApp-first संपर्क."
+            : "Trusted dental care in Muzaffarnagar with easy appointments and WhatsApp-first contact."}
         </p>
         <small>
           3D anatomy model adapted from University of Dundee, School of
@@ -16,15 +22,15 @@ export function SiteFooter() {
         </small>
       </div>
       <div>
-        <span>Navigate</span>
+        <span>{lang === "hi" ? "नेविगेशन" : "Navigate"}</span>
         {navItems.map((item) => (
           <Link key={item.id} href={item.href}>
-            {item.label}
+            {lang === "hi" ? item.labelHi : item.label}
           </Link>
         ))}
       </div>
       <div>
-        <span>Contact</span>
+        <span>{lang === "hi" ? "संपर्क" : "Contact"}</span>
         <a href={clinic.phoneHref}>{clinic.phone}</a>
         <a href={`mailto:${clinic.email}`}>{clinic.email}</a>
         <a
@@ -32,7 +38,7 @@ export function SiteFooter() {
           target="_blank"
           rel="noreferrer"
         >
-          WhatsApp the clinic
+          {lang === "hi" ? "WhatsApp पर बात करें" : "WhatsApp the clinic"}
         </a>
       </div>
     </footer>

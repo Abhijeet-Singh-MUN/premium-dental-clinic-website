@@ -4,9 +4,9 @@ import { Award, MapPin, Star, UsersRound } from "lucide-react";
 import { Reveal } from "@/components/Reveal";
 
 const trustItems = [
-  { icon: UsersRound, value: "2000+", label: "patients helped placeholder" },
-  { icon: Award, value: "MDS", label: "OMFS specialist placeholder" },
-  { icon: Star, value: "4.9", label: "Google rating placeholder" },
+  { icon: UsersRound, value: "26,000+", label: "patients treated" },
+  { icon: Award, value: "18 years", label: "of dental service" },
+  { icon: Star, value: "8 years", label: "Dental Officer in Army" },
   { icon: MapPin, value: "Local", label: "Muzaffarnagar access" }
 ];
 
