@@ -1,5 +1,6 @@
 "use client";
 
+import Image from "next/image";
 import { Award, GraduationCap, HeartHandshake } from "lucide-react";
 import { clinic } from "@/lib/clinic";
 import { useLanguage } from "@/components/LanguageProvider";
@@ -10,8 +11,14 @@ export function AboutSection({ standalone = false }) {
   return (
     <section className={`about-section ${standalone ? "standalone" : ""}`} id="about">
       <Reveal className="doctor-portrait">
-        <div className="portrait-placeholder">
-          <span>Doctor photo</span>
+        <div className="portrait-photo">
+          <Image
+            src="/images/clinic/doctor-desk.jpeg"
+            alt={`${clinic.doctor} at Global Smile & Care Dental Clinic`}
+            fill
+            sizes="(max-width: 760px) 100vw, 42vw"
+            priority={standalone}
+          />
         </div>
         <div className="doctor-badge">
           <Award size={18} />

@@ -8,10 +8,10 @@ export default function GalleryPage() {
       <main className="page-main">
         <section className="page-hero compact">
           <p className="eyebrow">Gallery</p>
-          <h1>Clinic, treatment, and result placeholders ready for real assets.</h1>
+          <h1>Real clinic photos that help patients feel familiar before visiting.</h1>
           <p>
-            Replace these panels with real clinic photos, consented before-after cases, and a
-            calm video walkthrough when available.
+            More chair, exterior, team, and short clinic walkthrough visuals can be added as
+            they become available.
           </p>
         </section>
         <GallerySection />

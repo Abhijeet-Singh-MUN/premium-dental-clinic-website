@@ -681,9 +681,14 @@ h3 {
   position: relative;
 }
 
-.portrait-placeholder {
+.portrait-placeholder,
+.portrait-photo {
   aspect-ratio: 4 / 5;
   border-radius: var(--radius);
+  overflow: hidden;
+}
+
+.portrait-placeholder {
   display: grid;
   place-items: center;
   background:
@@ -693,6 +698,18 @@ h3 {
   box-shadow: var(--shadow);
   color: var(--primary-dark);
   font-weight: 900;
+}
+
+.portrait-photo {
+  position: relative;
+  border: 1px solid var(--line);
+  box-shadow: var(--shadow);
+  background: #edf5f3;
+}
+
+.portrait-photo img {
+  object-fit: cover;
+  object-position: 58% center;
 }
 
 .doctor-badge {
@@ -773,6 +790,8 @@ h3 {
 }
 
 .gallery-card {
+  position: relative;
+  overflow: hidden;
   min-height: 210px;
   display: grid;
   align-content: end;
@@ -781,9 +800,51 @@ h3 {
     repeating-linear-gradient(135deg, rgba(13, 110, 116, 0.06), rgba(13, 110, 116, 0.06) 1px, transparent 1px, transparent 24px);
 }
 
+.gallery-card.with-photo {
+  min-height: 280px;
+  padding: 0;
+  background: #102b30;
+}
+
+.gallery-card.with-photo img {
+  object-fit: cover;
+  transition: transform 700ms ease, filter 700ms ease;
+}
+
+.gallery-card.with-photo::after {
+  content: "";
+  position: absolute;
+  inset: 0;
+  background: linear-gradient(180deg, rgba(13, 26, 29, 0.02) 35%, rgba(13, 26, 29, 0.78));
+  pointer-events: none;
+}
+
+.gallery-card.with-photo:hover img {
+  transform: scale(1.035);
+  filter: saturate(1.04) contrast(1.02);
+}
+
+.gallery-caption {
+  position: relative;
+  z-index: 1;
+  padding: 1.25rem;
+}
+
+.gallery-card.with-photo .gallery-caption {
+  color: #fff;
+}
+
 .gallery-card strong {
   margin-top: 0.9rem;
   display: block;
+}
+
+.gallery-card.with-photo strong {
+  margin-top: 0;
+}
+
+.gallery-card.with-photo span {
+  color: rgba(255, 255, 255, 0.78);
 }
 
 .testimonials-section {
