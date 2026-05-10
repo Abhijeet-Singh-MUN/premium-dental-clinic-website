@@ -8,3 +8,5 @@ yarn-error.log*
 dev-server*.log
 next-dev*.log
 .DS_Store
+
+.vercel
