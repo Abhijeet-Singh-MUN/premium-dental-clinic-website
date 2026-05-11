@@ -21,10 +21,12 @@ The active hero uses optimized local GLB assets with custom Three.js materials f
 
 ```bash
 npm install
-npm run dev
+npm run dev -- -p 3001
 ```
 
-Open `http://localhost:3000`.
+Open `http://localhost:3001`.
+
+If the local dev server behaves strangely after repeated restarts, stop any old Node/Next process using the port and remove the local `.next` cache. The production build is the source of truth for deploy health.
 
 ## Verification
 
@@ -32,6 +34,11 @@ Open `http://localhost:3000`.
 npm run lint
 npm run build
 ```
+
+## Documentation
+
+- [`PLAN.md`](PLAN.md) tracks product priorities and later-phase backlog.
+- [`ARCHITECTURE.md`](ARCHITECTURE.md) records the current site structure, interaction decisions, deployment notes, and local development caveats.
 
 ## Notes
 

@@ -6,7 +6,7 @@ import { BookingSection } from "@/components/sections/BookingSection";
 export default function ServicesPage() {
   return (
     <PageShell active="services">
-      <main className="page-main">
+      <main className="page-main services-page">
         <ServicesSection />
         <SpecialtySection />
         <BookingSection />

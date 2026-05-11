@@ -16,6 +16,7 @@
 - Reduce visible aliasing in the hero by tuning renderer DPR, material contrast, lighting, and edge visibility without making the model heavy.
 - Add restrained scroll effects: soft section reveals, subtle first-fold hero drift, service card lift, and gentle specialty-section depth.
 - Improve conversion polish across the landing page: clearer booking reassurance, stronger local trust proof, warmer testimonials, and more deliberate service CTAs.
+- Continue mobile refinement section-by-section, keeping vertical scroll short without turning important content into hidden complexity.
 - Keep the visual direction premium and simple; avoid noisy cinematic transitions, excessive models, or effects that slow mobile devices.
 
 ## Later-Phase Backlog

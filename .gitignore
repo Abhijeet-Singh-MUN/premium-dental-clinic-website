@@ -7,6 +7,7 @@ yarn-debug.log*
 yarn-error.log*
 dev-server*.log
 next-dev*.log
+.codex-logs
 .DS_Store
 
 .vercel
