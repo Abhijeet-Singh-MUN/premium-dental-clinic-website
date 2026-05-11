@@ -3,13 +3,13 @@
 ## Stable Project Links
 
 - Local folder: `D:\2026 freelance\dental-clinic-website`
-- GitHub remote: `https://github.com/vivek-global-smile/personal-website.git`
+- GitHub remote: `https://github.com/Abhijeet-Singh-MUN/premium-dental-clinic-website.git`
 - Current branch: `main`
-- Last pushed commit checked locally: `1780d0f Add clinic photos to about and gallery`
+- Last known website checkpoint before repository switch: `6aa8536 Polish mobile UX and gallery trust assets`
 - Vercel local link: project name `globalsmilemzn`
 - Vercel production URL: `https://globalsmilemzn.vercel.app/`
 
-The local repo is connected to the Vivek GitHub repository. The local `.vercel/project.json` is also linked to `globalsmilemzn`.
+The local repo is being moved to Abhijeet's GitHub repository. The local `.vercel/project.json` is linked to `globalsmilemzn`.
 
 ## Current Uncommitted Work
 
@@ -18,10 +18,14 @@ These files currently have local changes after the last pushed commit:
 - `README.md`
 - `PLAN.md`
 - `ARCHITECTURE.md`
+- `SESSION_HANDOFF.md`
 - `app/gallery/page.jsx`
 - `app/globals.css`
 - `components/sections/JourneySection.jsx`
 - `components/sections/TestimonialsSection.jsx`
+- `components/sections/TrustSection.jsx`
+- `components/sections/GallerySection.jsx`
+- `lib/i18n.js`
 
 The intent of these changes:
 
@@ -31,6 +35,8 @@ The intent of these changes:
 - Add right-side swipe affordance by default.
 - Show left-side affordance only after the user scrolls/taps right.
 - Document architecture, local development, and known tooling caveats.
+- Add real clinic gallery assets and real review snippets.
+- Keep V1 focused on traffic and appointment conversion.
 
 ## Verified Health
 
